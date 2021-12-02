@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>GeneralRecipePage/scripts/recipePageScripts.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading"><a href="global.html">Globals</a></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#backToSearch">backToSearch</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#bindButton">bindButton</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#bindFavoriteButton">bindFavoriteButton</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#bindRecipes">bindRecipes</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#bindRemoveButton">bindRemoveButton</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#createRecipeCards">createRecipeCards</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#DeleteFromFavID">DeleteFromFavID</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#displayTime">displayTime</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#fetchCall">fetchCall</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#getDefaultRecipes">getDefaultRecipes</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#hashing">hashing</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#openImage">openImage</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#openNotes">openNotes</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#populateMyRecipe">populateMyRecipe</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#storeToSessionStorage">storeToSessionStorage</a></span></li>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">GeneralRecipePage/scripts/recipePageScripts.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>window.addEventListener('DOMContentLoaded', init)
+
+const sessionStorage = window.sessionStorage
+const localStorage = window.localStorage
+
+/**
+ * bind favorite button on the general recipe page
+ */
+function bindFavoriteButton (event) {
+  const recipeData = JSON.parse(sessionStorage.getItem(sessionStorage.getItem('curr')))
+  const FavoriteButton = event.target
+  let inList = false
+  if (localStorage.getItem(recipeData.id) != null) {
+    inList = true
+  }
+  if (!inList) {
+    // store
+    try {
+      localStorage.setItem(recipeData.id, JSON.stringify(recipeData))
+    } catch {
+      console.log('WARNING!!: Recipe not stored')
+    }
+    FavoriteButton.innerHTML = 'Remove from MyRecipes'
+  } else {
+    // delete
+    try {
+      localStorage.removeItem(recipeData.id)
+    } catch {
+      console.log('Remove Unsuccessful')
+    }
+    FavoriteButton.innerHTML = 'Add to MyRecipes'
+  }
+}
+
+/**
+ * Open note and hide image when click the button
+ */
+function openNotes () {
+  const recipeExpand = document.querySelector('recipe-expand')
+  recipeExpand.shadowRoot.querySelector('.photo').classList.add('hide')
+  recipeExpand.shadowRoot.querySelector('.notes').classList.remove('hide')
+}
+
+/**
+* Open image and hide note when click the button
+* Set notes div display:none and remove display
+*/
+function openImage () {
+  const recipeExpand = document.querySelector('recipe-expand')
+  recipeExpand.shadowRoot.querySelector('.notes').classList.add('hide')
+  recipeExpand.shadowRoot.querySelector('.photo').classList.remove('hide')
+}
+
+/**
+* Go back on step in the history, bind to Back to Search button
+*/
+function backToSearch () {
+  window.history.back()
+}
+
+function init () {
+  // eslint-disable-next-line no-console
+  console.log('Called')
+
+  // populate page with JSON data
+  const dataKey = sessionStorage.getItem('curr')
+  const recipeData = JSON.parse(sessionStorage.getItem(dataKey))
+  // console.log(recipeData)
+  const recipeExpand = document.createElement('recipe-expand')
+  recipeExpand.data = recipeData
+  document.querySelector('body').appendChild(recipeExpand)
+
+  // Making div display time selected from slider
+  recipeExpand.shadowRoot.querySelector('.notes-button').addEventListener('click', openNotes)
+  recipeExpand.shadowRoot.querySelector('.image-button').addEventListener('click', openImage)
+
+  // Return to search results when "Back to search" is clicked
+  recipeExpand.shadowRoot.getElementById('back-button').addEventListener('click', backToSearch)
+
+  // Add to MyRecipes and Remove from MyRecipes
+  recipeExpand.shadowRoot.querySelector('.add-to-myrecipes button').addEventListener('click', bindFavoriteButton)
+  // recipeExpand.shadowRoot.querySelector('.add-to-myrecipes button').addEventListener('click', testFunc)
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.4</a> on Thu Dec 02 2021 06:05:23 GMT+0000 (Coordinated Universal Time) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>
